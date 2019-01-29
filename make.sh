@@ -25,7 +25,7 @@ if which xcrun &>/dev/null; then
     flags=(xcrun -sdk macosx g++)
     flags+=(-mmacosx-version-min=10.4)
 
-    for arch in i386 x86_64; do
+    for arch in i386; do
         flags+=(-arch "${arch}")
     done
 else
@@ -40,6 +40,7 @@ flags+=(-I.)
 flags+=(-I"${sdk}"/usr/include/libxml2)
 flags+=(-Ilibplist/include)
 flags+=(-Ilibplist/libcnary/include)
+flags+=(-I../lib-osx/openssl/include)
 
 flags+=("$@")
 
@@ -58,7 +59,7 @@ done
 set -x
 
 "${flags[@]}" -c -std=c++11 -o "${out}"/ldid.o ldid.cpp
-"${flags[@]}" -o "${out}"/ldid "${out}"/ldid.o "${os[@]}" -x c lookup2.c -lxml2 -framework Security -lcrypto
+"${flags[@]}" -o "${out}"/ldid "${out}"/ldid.o "${os[@]}" -x c lookup2.c -lxml2 -framework Security -L../lib-osx/openssl -lcrypto
 
 if ! "${ios}"; then
     ln -sf out/ldid .
