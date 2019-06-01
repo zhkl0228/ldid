@@ -5,3 +5,4 @@ ldid.deb
 debs
 *.o
 _
+sysroot
