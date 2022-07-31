@@ -10,7 +10,7 @@ else
     shift
 fi
 
-export DEVELOPER_DIR=/Applications/Xcode-5.1.1.app
+export DEVELOPER_DIR=/Applications/Xcode.app
 
 os=()
 
@@ -29,7 +29,6 @@ static=false
 flags+=(-framework CoreFoundation)
 
 flags+=(-lplist)
-flags+=(-lcrypto)
 
 else
 
@@ -39,19 +38,14 @@ if which xcrun &>/dev/null; then
     flags=(xcrun -sdk macosx g++)
     flags+=(-mmacosx-version-min=10.4)
 
-    for arch in i386 x86_64; do
-        flags+=(-arch "${arch}")
-    done
+    flags+=(-arch arm64)
 else
     flags=(g++)
 fi
 
-#flags+=(-L../../lib-osx/openssl)
-
 # XXX: cannot redistribute
 static=true
-flags+=(-Isysroot64/usr/include)
-flags+=(-lcrypto)
+flags+=(-I/opt/local/include)
 #flags+=(-Wl,/usr/lib/libcrypto.42.dylib)
 
 fi
@@ -83,7 +77,7 @@ mkdir -p "${out}"
 set -x
 
 "${flags[@]}" -O3 -g0 -c -std=c++11 -o "${out}"/ldid.o ldid.cpp
-"${flags[@]}" -O3 -g0 -o "${out}"/ldid "${out}"/ldid.o "${os[@]}" -x c lookup2.c -lxml2 -framework Security
+"${flags[@]}" -O3 -g0 -o "${out}"/ldid "${out}"/ldid.o "${os[@]}" /opt/local/lib/libcrypto.a /opt/local/lib/libz.a -x c lookup2.c -lxml2 -framework Security
 
 if ! "${ios}"; then
     ln -sf out/ldid .
